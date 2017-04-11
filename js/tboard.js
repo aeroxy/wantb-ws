@@ -173,36 +173,6 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
     create();
   });
 });
-app.filter('paymethod', function(){
-  return function(input) {
-    var output;
-    if (input==0){
-      output = '银行卡';
-    } else if (input==1){
-      output = '微信';
-    } else if (input==2){
-      output = '民生-支付宝';
-    } else {
-      output = '未知';
-    }
-    return output;
-  }
-});
-app.filter('terminal', function(){
-  return function(input) {
-    var output;
-    if (input==0){
-      output = '银行卡';
-    } else if (input==1){
-      output = '扫码';
-    } else if (input==2){
-      output = '扫码';
-    } else {
-      output = '未知';
-    }
-    return output;
-  }
-});
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
