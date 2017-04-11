@@ -14,8 +14,8 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
   });
   ws.onMessage(function(message){
     if (!init) {
+      console.log(JSON.parse(message.data));
       $scope.data = JSON.parse(message.data);
-      console.log($scope.data);
       $scope.main = $scope.data.initData.today.summary;
       $scope.overviews = [
         {
@@ -43,7 +43,7 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
       ];
       $scope.lists = [];
       for (var key in $scope.data.initData.list) {
-        let newlist = []; 
+        var newlist = []; 
         newlist.push($scope.data.initData.list[key].trans_time);
         newlist.push($scope.data.initData.list[key].node_name);
         newlist.push($scope.data.initData.list[key].exchange_amt);
@@ -70,11 +70,11 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
       var datanow_total = datanow_total_master.slice(0, currenttime);
       function create(){
         currenttime++;
-        let datathen = datathen_master.slice(0, currenttime - 1);
-        let datathen_total = datathen_total_master.slice(0, currenttime - 1);
+        var datathen = datathen_master.slice(0, currenttime - 1);
+        var datathen_total = datathen_total_master.slice(0, currenttime - 1);
         // function getLastWeek(){
-        //   let today = new Date();
-        //   let lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+        //   var today = new Date();
+        //   var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
         //   return lastWeek ;
         // }
         // var lastWeek = getLastWeek();
@@ -209,10 +209,10 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
       }, 600000);
       init = true;
     } else {
-      let pushData = JSON.parse(message.data);
+      var pushData = JSON.parse(message.data);
       $scope.newdata = pushData.data;
       function addlist(){
-        let newlist = [];
+        var newlist = [];
         newlist.push($scope.newdata.trans_time);
         newlist.push($scope.newdata.node_name);
         newlist.push($scope.newdata.exchange_amt);
