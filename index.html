@@ -49,11 +49,11 @@
             <th>终端类型</th>
           </tr>
           <tr ng-repeat="x in lists">
-            <th>{{x.trans_time}}</th>
-            <th>{{x.node_name}}</th>
-            <th>{{x.exchange_amt}}元</th>
-            <th>{{x.type}}</th>
-            <th>{{x.pay_type}}</th>
+            <th>{{x[0]}}</th>
+            <th>{{x[1]}}</th>
+            <th>{{x[2]}}元</th>
+            <th>{{x[3]}}</th>
+            <th>{{x[4]}}</th>
           </tr>
         </table>
       </div>
