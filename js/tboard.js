@@ -1,4 +1,8 @@
 var init = false;
+var tempCount = 0;
+var tempAmt = 0;
+var tempTodayCount = [];
+var tempTodayAmt = [];
 var app = angular.module('WCTB',['ngMaterial', 'ngMessages', 'ngWebSocket']);
 app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
   var ws = $websocket('ws://10.10.1.134:9503');
@@ -11,6 +15,7 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
   ws.onMessage(function(message){
     if (!init) {
       $scope.data = JSON.parse(message.data);
+      console.log($scope.data);
       $scope.main = $scope.data.initData.today.summary;
       $scope.overviews = [
         {
@@ -37,7 +42,6 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
         },
       ];
       $scope.lists = [];
-      console.log($scope.data.initData.list);
       for (var key in $scope.data.initData.list) {
         let newlist = []; 
         newlist.push($scope.data.initData.list[key].trans_time);
@@ -68,6 +72,12 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
           datanow.push(todaySummary[i].transactionTotalCount);
           datanow_total.push(Number(todaySummary[i].transactionTotalAmt));
         }
+        tempTodayCount.push(tempCount);
+        tempTodayAmt.push(tempAmt);
+        datanow = datanow.concat(tempTodayCount);
+        datanow_total = datanow_total.concat(tempTodayAmt);
+        console.log(datanow);
+        console.log(datanow_total);
         var datathen = [];
         var datathen_total = [];
         var historySummary = Object.values($scope.data.initData.history.periodSummary);
@@ -134,14 +144,10 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
             text: '',
           },
           legend: {
-            layout: 'vertical',
-            align: 'left',
-            verticalAlign: 'top',
-            x: 150,
-            y: 100,
-            floating: true,
-            borderWidth: 1,
-            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#DDDDDD'
+            layout: 'horizontal',
+            align: 'center',
+            verticalAlign: 'bottom',
+            floating: false,
           },
           xAxis: {
             type: 'datetime',
@@ -183,30 +189,35 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
         });
       }
       create();
+      setInterval(function(){
+        create();
+        console.log('Recreated! Count = ' + tempCount + ' and Amt = ' + tempAmt);
+        tempCount = 0;
+        tempAmt = 0;
+      },1000);
       init = true;
     } else {
       let pushData = JSON.parse(message.data);
-      $scope.data = pushData.data;
-      console.log($scope.data);
+      $scope.newdata = pushData.data;
       function addlist(){
         let newlist = [];
-        newlist.push($scope.data.trans_time);
-        newlist.push($scope.data.node_name);
-        newlist.push($scope.data.exchange_amt);
+        newlist.push($scope.newdata.trans_time);
+        newlist.push($scope.newdata.node_name);
+        newlist.push($scope.newdata.exchange_amt);
         $scope.main.transactionTotalAmt = (parseFloat($scope.main.transactionTotalAmt) + parseFloat(newlist[2])).toFixed(2);
+        tempAmt = tempAmt + newlist[2];
         $scope.main.transactionTotalCount++;
-        newlist.push($scope.data.type);
-        if ($scope.data.code_type==101){
+        tempCount++;
+        newlist.push($scope.newdata.type);
+        if ($scope.newdata.code_type==101){
           $scope.main.wxTotalAmt = (parseFloat($scope.main.wxTotalAmt) + parseFloat(newlist[2])).toFixed(2);
           $scope.main.wxTotalCount++;
-        } else if ($scope.data.code_type==100){
+        } else if ($scope.newdata.code_type==100){
           $scope.main.alipayTotalAmt = (parseFloat($scope.main.alipayTotalAmt) + parseFloat(newlist[2])).toFixed(2);
           $scope.main.alipayTotalCount++;
         }
         newlist.push('扫码');
         $scope.lists.unshift(newlist);
-        console.log(newlist);
-        console.log($scope.lists);
         if ($scope.lists.length > 30) {$scope.lists.splice(-1,1)}
         $scope.overviews = [
           {
