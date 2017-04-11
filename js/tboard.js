@@ -51,11 +51,27 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
         newlist.push($scope.data.initData.list[key].pay_type);
         $scope.lists.push(newlist);
       }
+      var datanow_master = $scope.data.initData.today.periodSummary.count;
+      var datathen_master = $scope.data.initData.history.periodSummary.count;
+      var datanow_total_master = [];
+      var datathen_total_master = [];
+      for (var key in $scope.data.initData.today.periodSummary.amt) {
+        datanow_total_master.push(Number($scope.data.initData.today.periodSummary.amt[key]));
+      }
+      for (var key in $scope.data.initData.history.periodSummary.amt) {
+        datathen_total_master.push(Number($scope.data.initData.history.periodSummary.amt[key]));
+      }
+      var currentdate = new Date();
+      var currenttime = (currentdate.getHours() * 6) + Math.floor(currentdate.getMinutes() / 10);
+      var currentyear = currentdate.getFullYear();
+      var currentmonth = currentdate.getMonth();
+      var today = currentdate.getDate();
+      var datanow = datanow_master.slice(0, currenttime);
+      var datanow_total = datanow_total_master.slice(0, currenttime);
       function create(){
-        var currentdate = new Date();
-        var currentyear = currentdate.getFullYear();
-        var currentmonth = currentdate.getMonth();
-        var today = currentdate.getDate();
+        currenttime++;
+        let datathen = datathen_master.slice(0, currenttime - 1);
+        let datathen_total = datathen_total_master.slice(0, currenttime - 1);
         // function getLastWeek(){
         //   let today = new Date();
         //   let lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
@@ -65,26 +81,23 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
         // var lastWeekMonth = lastWeek.getMonth();
         // var lastWeekDay = lastWeek.getDate();
         // var lastWeekYear = lastWeek.getFullYear();
-        var datanow = [];
-        var datanow_total = [];
-        var todaySummary = Object.values($scope.data.initData.today.periodSummary);
-        for(var i = 0; i<todaySummary.length; i++){
-          datanow.push(todaySummary[i].transactionTotalCount);
-          datanow_total.push(Number(todaySummary[i].transactionTotalAmt));
-        }
+        // var todaySummary = Object.values($scope.data.initData.today.periodSummary);
+        // for(var i = 0; i<todaySummary.length; i++){
+        //   datanow.push(todaySummary[i].transactionTotalCount);
+        //   datanow_total.push(Number(todaySummary[i].transactionTotalAmt));
+        // }
+        tempTodayCount = [];
+        tempTodayAmt = [];
         tempTodayCount.push(tempCount);
         tempTodayAmt.push(tempAmt);
         datanow = datanow.concat(tempTodayCount);
         datanow_total = datanow_total.concat(tempTodayAmt);
-        console.log(datanow);
         console.log(datanow_total);
-        var datathen = [];
-        var datathen_total = [];
-        var historySummary = Object.values($scope.data.initData.history.periodSummary);
-        for(var i = 0; i<historySummary.length; i++){
-          datathen.push(historySummary[i].transactionTotalCount);
-          datathen_total.push(Number(historySummary[i].transactionTotalAmt));
-        }
+        // var historySummary = Object.values($scope.data.initData.history.periodSummary);
+        // for(var i = 0; i<historySummary.length; i++){
+        //   datathen.push(historySummary[i].transactionTotalCount);
+        //   datathen_total.push(Number(historySummary[i].transactionTotalAmt));
+        // }
         Highcharts.chart('volume',{
           chart: {
             type: 'line',
@@ -191,10 +204,9 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
       create();
       setInterval(function(){
         create();
-        console.log('Recreated! Count = ' + tempCount + ' and Amt = ' + tempAmt);
         tempCount = 0;
         tempAmt = 0;
-      },1000);
+      }, 600000);
       init = true;
     } else {
       let pushData = JSON.parse(message.data);
@@ -206,6 +218,7 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
         newlist.push($scope.newdata.exchange_amt);
         $scope.main.transactionTotalAmt = (parseFloat($scope.main.transactionTotalAmt) + parseFloat(newlist[2])).toFixed(2);
         tempAmt = tempAmt + newlist[2];
+        console.log(tempAmt);
         $scope.main.transactionTotalCount++;
         tempCount++;
         newlist.push($scope.newdata.type);
