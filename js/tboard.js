@@ -40,15 +40,15 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
       var currentyear = currentdate.getFullYear();
       var currentmonth = currentdate.getMonth();
       var today = currentdate.getDate();
-      function getLastWeek(){
-        let today = new Date();
-        let lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
-        return lastWeek ;
-      }
-      var lastWeek = getLastWeek();
-      var lastWeekMonth = lastWeek.getMonth();
-      var lastWeekDay = lastWeek.getDate();
-      var lastWeekYear = lastWeek.getFullYear();
+      // function getLastWeek(){
+      //   let today = new Date();
+      //   let lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+      //   return lastWeek ;
+      // }
+      // var lastWeek = getLastWeek();
+      // var lastWeekMonth = lastWeek.getMonth();
+      // var lastWeekDay = lastWeek.getDate();
+      // var lastWeekYear = lastWeek.getFullYear();
       var datanow = [];
       var datanow_total = [];
       var todaySummary = Object.values($scope.data.initData.today.periodSummary);
@@ -103,7 +103,7 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
         series: [{
           name: '上周同期',
           data: datathen,
-          pointStart: Date.UTC(lastWeekYear, lastWeekMonth, lastWeekDay),
+          pointStart: Date.UTC(currentyear, currentmonth, today),
           pointInterval: 604000,
           color: '#00a1af',
         }, {
@@ -158,7 +158,7 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
         series: [{
           name: '上周同期',
           data: datathen_total,
-          pointStart: Date.UTC(lastWeekYear, lastWeekMonth, lastWeekDay),
+          pointStart: Date.UTC(currentyear, currentmonth, today),
           pointInterval: 604000,
           color: '#00a1af',
         }, {
