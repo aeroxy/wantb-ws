@@ -5,7 +5,7 @@ var tempTodayCount = [];
 var tempTodayAmt = [];
 var app = angular.module('WCTB',['ngMaterial', 'ngMessages', 'ngWebSocket']);
 app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
-  var ws = $websocket('ws://10.10.1.134:9503');
+  var ws = $websocket('ws://60.205.225.56:9503');
   ws.onOpen(function(){  
     console.log("Socket has been opened!");
   });
@@ -88,11 +88,14 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
         // }
         tempTodayCount = [];
         tempTodayAmt = [];
-        tempTodayCount.push(tempCount);
-        tempTodayAmt.push(tempAmt);
-        datanow = datanow.concat(tempTodayCount);
-        datanow_total = datanow_total.concat(tempTodayAmt);
-        console.log(datanow_total);
+        if (init) {
+          tempTodayCount.push(tempCount * 9);
+          tempAmt = tempAmt.toFixed(2);
+          tempAmt = parseFloat(tempAmt) * 9;
+          tempTodayAmt.push(tempAmt);
+          datanow = datanow.concat(tempTodayCount);
+          datanow_total = datanow_total.concat(tempTodayAmt);
+        }
         // var historySummary = Object.values($scope.data.initData.history.periodSummary);
         // for(var i = 0; i<historySummary.length; i++){
         //   datathen.push(historySummary[i].transactionTotalCount);
@@ -217,10 +220,12 @@ app.controller('AppCtrl',function($scope, $http, $sce, $q, $websocket){
         newlist.push($scope.newdata.node_name);
         newlist.push($scope.newdata.exchange_amt);
         $scope.main.transactionTotalAmt = (parseFloat($scope.main.transactionTotalAmt) + parseFloat(newlist[2])).toFixed(2);
+        console.log(newlist[2]);
         tempAmt = tempAmt + newlist[2];
         console.log(tempAmt);
         $scope.main.transactionTotalCount++;
         tempCount++;
+        console.log(tempCount);
         newlist.push($scope.newdata.type);
         if ($scope.newdata.code_type==101){
           $scope.main.wxTotalAmt = (parseFloat($scope.main.wxTotalAmt) + parseFloat(newlist[2])).toFixed(2);
